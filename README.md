@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🏢 Empresa – Gestión de Departamentos y Empleados
 
 Proyecto Spring Boot con API REST y interfaz web (Thymeleaf) para gestionar departamentos y empleados.
@@ -159,3 +160,7 @@ src/main/resources/
 - [x] Calcular salario total por departamento
 - [x] Mover empleado a otro departamento (cambio de FK)
 - [x] Vista de detalle del departamento con lista de empleados
+=======
+# Empresa-Spring-boot-
+Aprendiendo Spring Boot  en Bases de datos
+>>>>>>> f2ae662132ee24f1ab0147ae0f2cbad858edf1ee
