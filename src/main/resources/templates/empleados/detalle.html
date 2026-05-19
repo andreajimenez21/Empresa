@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${empleado.nombre} + ' – Detalle'">Detalle Empleado</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #1a1a2e; }
+        nav { background: #1a1a2e; padding: 1rem 2rem; display: flex; gap: 2rem; align-items: center; }
+        nav a { color: #e0e0e0; text-decoration: none; font-weight: 500; }
+        nav a:hover { color: #6c9eff; }
+        nav .brand { color: #6c9eff; font-weight: 700; font-size: 1.1rem; margin-right: auto; }
+        .container { max-width: 700px; margin: 2rem auto; padding: 0 1rem; }
+        .card { background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+        h1 { font-size: 1.8rem; margin-bottom: 1rem; }
+        .row { display: flex; gap: 3rem; flex-wrap: wrap; margin-bottom: 1rem; }
+        .field label { font-size: .8rem; color: #888; text-transform: uppercase; letter-spacing: .05em; }
+        .field p { font-size: 1.05rem; font-weight: 500; margin-top: .2rem; }
+        .dep-link { color: #6c9eff; text-decoration: none; font-weight: 600; }
+        .dep-link:hover { text-decoration: underline; }
+        .btn-row { display: flex; gap: .75rem; margin-top: 1.5rem; }
+        .btn { padding: .6rem 1.2rem; border: none; border-radius: 6px; cursor: pointer; font-size: .95rem; font-weight: 500; text-decoration: none; }
+        .btn-primary { background: #6c9eff; color: white; }
+        .btn-warning { background: #ffc107; color: #1a1a2e; }
+        .btn-info { background: #17a2b8; color: white; }
+        .back { margin-bottom: 1rem; display: inline-flex; }
+    </style>
+</head>
+<body>
+<nav>
+    <span class="brand">🏢 Empresa</span>
+    <a th:href="@{/web/departamentos}">Departamentos</a>
+    <a th:href="@{/web/empleados}">Empleados</a>
+</nav>
+
+<div class="container">
+    <a th:href="@{/web/empleados}" class="btn btn-primary back">← Volver</a>
+    <div class="card">
+        <h1 th:text="'👤 ' + ${empleado.nombre}"></h1>
+        <div class="row">
+            <div class="field">
+                <label>Puesto</label>
+                <p th:text="${empleado.puesto}"></p>
+            </div>
+            <div class="field">
+                <label>Salario</label>
+                <p th:text="${#numbers.formatDecimal(empleado.salario,1,'COMMA',2,'POINT')} + ' €'"></p>
+            </div>
+            <div class="field">
+                <label>Fecha contratación</label>
+                <p th:text="${empleado.fechaContratacion}"></p>
+            </div>
+            <div class="field">
+                <label>Departamento</label>
+                <p th:if="${empleado.departamento != null}">
+                    <a th:href="@{/web/departamentos/{id}(id=${empleado.departamento.id})}"
+                       class="dep-link"
+                       th:text="${empleado.departamento.nombre}">
+                    </a>
+                </p>
+                <p th:if="${empleado.departamento == null}">Sin asignar</p>
+            </div>
+        </div>
+        <div class="btn-row">
+            <a th:href="@{/web/empleados/editar/{id}(id=${empleado.id})}" class="btn btn-warning">✏ Editar</a>
+            <a th:href="@{/web/empleados/mover/{id}(id=${empleado.id})}" class="btn btn-info">🔀 Mover</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

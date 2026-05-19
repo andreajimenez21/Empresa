@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${departamento.nombre} + ' – Detalle'">Detalle Departamento</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #1a1a2e; }
+        nav { background: #1a1a2e; padding: 1rem 2rem; display: flex; gap: 2rem; align-items: center; }
+        nav a { color: #e0e0e0; text-decoration: none; font-weight: 500; }
+        nav a:hover { color: #6c9eff; }
+        nav .brand { color: #6c9eff; font-weight: 700; font-size: 1.1rem; margin-right: auto; }
+        .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+        .card { background: white; border-radius: 12px; padding: 1.5rem 2rem; box-shadow: 0 2px 12px rgba(0,0,0,.08); margin-bottom: 1.5rem; }
+        h1 { font-size: 1.8rem; margin-bottom: .5rem; }
+        .meta { display: flex; gap: 2rem; color: #555; margin-bottom: 1rem; flex-wrap: wrap; }
+        .meta span { display: flex; align-items: center; gap: .4rem; }
+        .stat-row { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 1rem; }
+        .stat { background: #f0f2f5; border-radius: 8px; padding: .75rem 1.25rem; text-align: center; }
+        .stat-val { font-size: 1.4rem; font-weight: 700; color: #6c9eff; }
+        .stat-lbl { font-size: .8rem; color: #888; }
+        h2 { font-size: 1.3rem; margin-bottom: 1rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: .8rem 1rem; text-align: left; }
+        thead { background: #1a1a2e; color: white; border-radius: 8px; }
+        tbody tr:hover { background: #f7f9ff; }
+        tbody tr:not(:last-child) { border-bottom: 1px solid #eee; }
+        .btn { padding: .5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-size: .9rem; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: .4rem; }
+        .btn-primary { background: #6c9eff; color: white; }
+        .btn-warning { background: #ffc107; color: #1a1a2e; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-sm { padding: .3rem .65rem; font-size: .8rem; }
+        .actions { display: flex; gap: .4rem; }
+        .back { margin-bottom: 1rem; display: inline-flex; }
+        .empty { color: #888; padding: 1.5rem; text-align: center; }
+    </style>
+</head>
+<body>
+<nav>
+    <span class="brand">🏢 Empresa</span>
+    <a th:href="@{/web/departamentos}">Departamentos</a>
+    <a th:href="@{/web/empleados}">Empleados</a>
+</nav>
+
+<div class="container">
+    <a th:href="@{/web/departamentos}" class="btn btn-primary back">← Volver</a>
+
+    <div class="card">
+        <h1 th:text="'📁 ' + ${departamento.nombre}"></h1>
+        <div class="meta">
+            <span>🏗 Planta: <strong th:text="${departamento.planta}"></strong></span>
+            <span>💶 Presupuesto: <strong th:text="${#numbers.formatDecimal(departamento.presupuesto,1,'COMMA',2,'POINT')} + ' €'"></strong></span>
+        </div>
+        <div class="stat-row">
+            <div class="stat">
+                <div class="stat-val" th:text="${departamento.numeroEmpleados}"></div>
+                <div class="stat-lbl">Empleados</div>
+            </div>
+            <div class="stat">
+                <div class="stat-val" th:text="${#numbers.formatDecimal(salarioTotal,1,'COMMA',2,'POINT')} + ' €'"></div>
+                <div class="stat-lbl">Salario Total</div>
+            </div>
+        </div>
+        <div style="margin-top:1rem; display:flex; gap:.5rem;">
+            <a th:href="@{/web/departamentos/editar/{id}(id=${departamento.id})}" class="btn btn-warning">✏ Editar</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>👥 Empleados del departamento</h2>
+        <div style="margin-bottom:1rem;">
+            <a th:href="@{/web/empleados/nueva}" class="btn btn-success">＋ Nuevo Empleado</a>
+        </div>
+
+        <table th:if="${!departamento.empleados.isEmpty()}">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Puesto</th>
+                    <th>Salario</th>
+                    <th>Contratación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="emp : ${departamento.empleados}">
+                    <td th:text="${emp.nombre}"></td>
+                    <td th:text="${emp.puesto}"></td>
+                    <td th:text="${#numbers.formatDecimal(emp.salario,1,'COMMA',2,'POINT')} + ' €'"></td>
+                    <td th:text="${emp.fechaContratacion}"></td>
+                    <td>
+                        <div class="actions">
+                            <a th:href="@{/web/empleados/editar/{id}(id=${emp.id})}" class="btn btn-warning btn-sm">✏</a>
+                            <a th:href="@{/web/empleados/mover/{id}(id=${emp.id})}" class="btn btn-primary btn-sm">🔀 Mover</a>
+                            <form th:action="@{/web/empleados/borrar/{id}(id=${emp.id})}" method="post"
+                                  onsubmit="return confirm('¿Eliminar empleado?')">
+                                <button type="submit" class="btn btn-danger btn-sm">🗑</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="empty" th:if="${departamento.empleados.isEmpty()}">No hay empleados en este departamento.</div>
+    </div>
+</div>
+</body>
+</html>

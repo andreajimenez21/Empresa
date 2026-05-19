@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Empleados – Empresa</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #1a1a2e; }
+        nav { background: #1a1a2e; padding: 1rem 2rem; display: flex; gap: 2rem; align-items: center; }
+        nav a { color: #e0e0e0; text-decoration: none; font-weight: 500; }
+        nav a:hover { color: #6c9eff; }
+        nav .brand { color: #6c9eff; font-weight: 700; font-size: 1.1rem; margin-right: auto; }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        h1 { font-size: 1.8rem; margin-bottom: 1.5rem; }
+        .toolbar { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: flex-end; }
+        .toolbar form { display: flex; gap: .5rem; flex-wrap: wrap; align-items: flex-end; }
+        .field { display: flex; flex-direction: column; gap: .3rem; }
+        .field label { font-size: .8rem; color: #555; font-weight: 500; }
+        input[type=text], input[type=number] { padding: .5rem .75rem; border: 1.5px solid #cdd5e0; border-radius: 6px; font-size: .9rem; }
+        input:focus { outline: none; border-color: #6c9eff; }
+        .btn { padding: .5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-size: .9rem; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: .4rem; }
+        .btn-primary { background: #6c9eff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-warning { background: #ffc107; color: #1a1a2e; }
+        .btn-info { background: #17a2b8; color: white; }
+        .btn-sm { padding: .3rem .65rem; font-size: .8rem; }
+        table { width: 100%; background: white; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,.08); border-collapse: collapse; }
+        thead { background: #1a1a2e; color: white; }
+        th, td { padding: .85rem 1rem; text-align: left; }
+        tbody tr:hover { background: #f7f9ff; }
+        tbody tr:not(:last-child) { border-bottom: 1px solid #eee; }
+        .actions { display: flex; gap: .4rem; flex-wrap: wrap; }
+        .dep-badge { background: #e8f0fe; color: #4a7de8; padding: .2rem .6rem; border-radius: 20px; font-size: .8rem; font-weight: 500; }
+        .empty { text-align: center; padding: 3rem; color: #888; }
+    </style>
+</head>
+<body>
+<nav>
+    <span class="brand">🏢 Empresa</span>
+    <a th:href="@{/web/departamentos}">Departamentos</a>
+    <a th:href="@{/web/empleados}">Empleados</a>
+</nav>
+
+<div class="container">
+    <h1>👥 Empleados</h1>
+
+    <div class="toolbar">
+        <form th:action="@{/web/empleados}" method="get">
+            <div class="field">
+                <label>Puesto</label>
+                <input type="text" name="puesto" placeholder="Ej: Analista" th:value="${puesto}"/>
+            </div>
+            <div class="field">
+                <label>Salario mínimo (€)</label>
+                <input type="number" name="salarioMin" placeholder="0" th:value="${salarioMin}" step="0.01" min="0"/>
+            </div>
+            <div class="field">
+                <label>Salario máximo (€)</label>
+                <input type="number" name="salarioMax" placeholder="99999" th:value="${salarioMax}" step="0.01" min="0"/>
+            </div>
+            <button type="submit" class="btn btn-primary" style="align-self:flex-end">🔍 Filtrar</button>
+            <a th:href="@{/web/empleados}" class="btn btn-warning" style="align-self:flex-end">✖ Limpiar</a>
+        </form>
+        <a th:href="@{/web/empleados/nueva}" class="btn btn-success" style="align-self:flex-end">＋ Nuevo Empleado</a>
+    </div>
+
+    <table th:if="${!empleados.isEmpty()}">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Puesto</th>
+                <th>Salario</th>
+                <th>Contratación</th>
+                <th>Departamento</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="emp : ${empleados}">
+                <td th:text="${emp.id}"></td>
+                <td th:text="${emp.nombre}"></td>
+                <td th:text="${emp.puesto}"></td>
+                <td th:text="${#numbers.formatDecimal(emp.salario,1,'COMMA',2,'POINT')} + ' €'"></td>
+                <td th:text="${emp.fechaContratacion}"></td>
+                <td>
+                    <span class="dep-badge"
+                          th:text="${emp.departamento != null ? emp.departamento.nombre : 'Sin asignar'}">
+                    </span>
+                </td>
+                <td>
+                    <div class="actions">
+                        <a th:href="@{/web/empleados/editar/{id}(id=${emp.id})}" class="btn btn-warning btn-sm">✏ Editar</a>
+                        <a th:href="@{/web/empleados/mover/{id}(id=${emp.id})}" class="btn btn-info btn-sm">🔀 Mover</a>
+                        <form th:action="@{/web/empleados/borrar/{id}(id=${emp.id})}" method="post"
+                              onsubmit="return confirm('¿Eliminar empleado?')">
+                            <button type="submit" class="btn btn-danger btn-sm">🗑</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="empty" th:if="${empleados.isEmpty()}">
+        <p>No se encontraron empleados con esos filtros.</p>
+        <a th:href="@{/web/empleados/nueva}" class="btn btn-success" style="margin-top:1rem">＋ Añadir empleado</a>
+    </div>
+</div>
+</body>
+</html>

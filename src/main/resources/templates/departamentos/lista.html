@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Departamentos – Empresa</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #1a1a2e; }
+        nav { background: #1a1a2e; padding: 1rem 2rem; display: flex; gap: 2rem; align-items: center; }
+        nav a { color: #e0e0e0; text-decoration: none; font-weight: 500; transition: color .2s; }
+        nav a:hover { color: #6c9eff; }
+        nav .brand { color: #6c9eff; font-weight: 700; font-size: 1.1rem; margin-right: auto; }
+        .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+        h1 { font-size: 1.8rem; margin-bottom: 1.5rem; color: #1a1a2e; }
+        .toolbar { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
+        .toolbar form { display: flex; gap: .5rem; flex-wrap: wrap; }
+        input[type=text] { padding: .5rem .75rem; border: 1.5px solid #cdd5e0; border-radius: 6px; font-size: .9rem; }
+        input[type=text]:focus { outline: none; border-color: #6c9eff; }
+        .btn { padding: .5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-size: .9rem; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: .4rem; transition: background .2s; }
+        .btn-primary { background: #6c9eff; color: white; }
+        .btn-primary:hover { background: #4a7de8; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-success:hover { background: #218838; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; }
+        .btn-warning { background: #ffc107; color: #1a1a2e; }
+        .btn-warning:hover { background: #e0a800; }
+        .btn-info { background: #17a2b8; color: white; }
+        .btn-info:hover { background: #138496; }
+        .btn-sm { padding: .3rem .65rem; font-size: .8rem; }
+        table { width: 100%; background: white; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,.08); border-collapse: collapse; overflow: hidden; }
+        thead { background: #1a1a2e; color: white; }
+        th, td { padding: .85rem 1rem; text-align: left; }
+        tbody tr:hover { background: #f7f9ff; }
+        tbody tr:not(:last-child) { border-bottom: 1px solid #eee; }
+        .actions { display: flex; gap: .4rem; }
+        .badge { background: #6c9eff22; color: #4a7de8; padding: .2rem .6rem; border-radius: 20px; font-size: .8rem; font-weight: 600; }
+        .empty { text-align: center; padding: 3rem; color: #888; }
+    </style>
+</head>
+<body>
+<nav>
+    <span class="brand">🏢 Empresa</span>
+    <a th:href="@{/web/departamentos}">Departamentos</a>
+    <a th:href="@{/web/empleados}">Empleados</a>
+</nav>
+
+<div class="container">
+    <h1>📁 Departamentos</h1>
+
+    <div class="toolbar">
+        <form th:action="@{/web/departamentos}" method="get">
+            <input type="text" name="nombre" placeholder="Buscar por nombre..." th:value="${nombre}"/>
+            <input type="text" name="planta" placeholder="Filtrar por planta..." th:value="${planta}"/>
+            <button type="submit" class="btn btn-primary">🔍 Buscar</button>
+            <a th:href="@{/web/departamentos}" class="btn btn-warning">✖ Limpiar</a>
+        </form>
+        <a th:href="@{/web/departamentos/nueva}" class="btn btn-success">＋ Nuevo Departamento</a>
+    </div>
+
+    <table th:if="${!departamentos.isEmpty()}">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Planta</th>
+                <th>Presupuesto (€)</th>
+                <th>Empleados</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="dep : ${departamentos}">
+                <td th:text="${dep.id}"></td>
+                <td th:text="${dep.nombre}"></td>
+                <td th:text="${dep.planta}"></td>
+                <td th:text="${#numbers.formatDecimal(dep.presupuesto, 1, 'COMMA', 2, 'POINT')} + ' €'"></td>
+                <td><span class="badge" th:text="${dep.numeroEmpleados} + ' emp.'"></span></td>
+                <td>
+                    <div class="actions">
+                        <a th:href="@{/web/departamentos/{id}(id=${dep.id})}" class="btn btn-info btn-sm">👁 Ver</a>
+                        <a th:href="@{/web/departamentos/editar/{id}(id=${dep.id})}" class="btn btn-warning btn-sm">✏ Editar</a>
+                        <form th:action="@{/web/departamentos/borrar/{id}(id=${dep.id})}" method="post"
+                              onsubmit="return confirm('¿Eliminar departamento y todos sus empleados?')">
+                            <button type="submit" class="btn btn-danger btn-sm">🗑 Borrar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="empty" th:if="${departamentos.isEmpty()}">
+        <p>No se encontraron departamentos.</p>
+        <a th:href="@{/web/departamentos/nueva}" class="btn btn-success" style="margin-top:1rem">＋ Crear el primero</a>
+    </div>
+</div>
+</body>
+</html>

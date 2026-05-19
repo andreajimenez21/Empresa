@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mover Empleado</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #1a1a2e; }
+        nav { background: #1a1a2e; padding: 1rem 2rem; display: flex; gap: 2rem; align-items: center; }
+        nav a { color: #e0e0e0; text-decoration: none; font-weight: 500; }
+        nav a:hover { color: #6c9eff; }
+        nav .brand { color: #6c9eff; font-weight: 700; font-size: 1.1rem; margin-right: auto; }
+        .container { max-width: 560px; margin: 2rem auto; padding: 0 1rem; }
+        .card { background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+        h1 { font-size: 1.5rem; margin-bottom: .5rem; }
+        .info { background: #f0f2f5; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; }
+        .info p { margin: .3rem 0; font-size: .95rem; }
+        .info strong { color: #6c9eff; }
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; margin-bottom: .4rem; font-weight: 500; font-size: .9rem; color: #555; }
+        select { width: 100%; padding: .65rem .9rem; border: 1.5px solid #cdd5e0; border-radius: 6px; font-size: 1rem; background: white; }
+        select:focus { outline: none; border-color: #6c9eff; }
+        .btn-row { display: flex; gap: .75rem; margin-top: 1.5rem; }
+        .btn { padding: .6rem 1.2rem; border: none; border-radius: 6px; cursor: pointer; font-size: .95rem; font-weight: 500; text-decoration: none; }
+        .btn-primary { background: #6c9eff; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+    </style>
+</head>
+<body>
+<nav>
+    <span class="brand">🏢 Empresa</span>
+    <a th:href="@{/web/departamentos}">Departamentos</a>
+    <a th:href="@{/web/empleados}">Empleados</a>
+</nav>
+
+<div class="container">
+    <div class="card">
+        <h1>🔀 Mover Empleado</h1>
+
+        <div class="info">
+            <p>Empleado: <strong th:text="${empleado.nombre}"></strong></p>
+            <p>Puesto: <strong th:text="${empleado.puesto}"></strong></p>
+            <p>Departamento actual:
+                <strong th:text="${empleado.departamento != null ? empleado.departamento.nombre : 'Sin asignar'}"></strong>
+            </p>
+        </div>
+
+        <form th:action="@{/web/empleados/mover/{id}(id=${empleado.id})}" method="post">
+            <div class="form-group">
+                <label for="nuevoDepartamentoId">Nuevo departamento</label>
+                <select id="nuevoDepartamentoId" name="nuevoDepartamentoId" required>
+                    <option value="">-- Selecciona departamento --</option>
+                    <option th:each="dep : ${departamentos}"
+                            th:value="${dep.id}"
+                            th:text="${dep.nombre} + ' – ' + ${dep.planta}"
+                            th:selected="${empleado.departamento != null and empleado.departamento.id == dep.id}">
+                    </option>
+                </select>
+            </div>
+            <div class="btn-row">
+                <button type="submit" class="btn btn-primary">✔ Confirmar traslado</button>
+                <a th:href="@{/web/empleados}" class="btn btn-secondary">✖ Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
